@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "DiscordLinker-2.X": {
+      "commandName": "Project",
+      "nativeDebugging": false
+    }
+  }
+}
