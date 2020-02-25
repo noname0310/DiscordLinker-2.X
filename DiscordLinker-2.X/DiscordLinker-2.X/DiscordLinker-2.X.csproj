@@ -16,13 +16,25 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <Compile Remove="IPCManage\**" />
+    <Compile Remove="OptionManage\**" />
+    <EmbeddedResource Remove="IPCManage\**" />
+    <EmbeddedResource Remove="OptionManage\**" />
+    <None Remove="IPCManage\**" />
+    <None Remove="OptionManage\**" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="Discord.Net" Version="2.1.1" />
     <PackageReference Include="Newtonsoft.Json" Version="12.0.3" />
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="IPCManage\" />
-    <Folder Include="OptionManage\" />
+    <Folder Include="Properties\IPCManage\" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\OxideFileIPC\OxideFileIPC.csproj" />
   </ItemGroup>
 
 </Project>
