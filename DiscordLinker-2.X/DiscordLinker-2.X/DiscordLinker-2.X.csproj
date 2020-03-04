@@ -16,12 +16,7 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <Compile Remove="IPCManage\**" />
-    <Compile Remove="OptionManage\**" />
-    <EmbeddedResource Remove="IPCManage\**" />
-    <EmbeddedResource Remove="OptionManage\**" />
-    <None Remove="IPCManage\**" />
-    <None Remove="OptionManage\**" />
+    <None Remove="DiscordManage\vfbdccxu.md2~" />
   </ItemGroup>
 
   <ItemGroup>
@@ -30,11 +25,9 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Folder Include="Properties\IPCManage\" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <ProjectReference Include="..\OxideFileIPC\OxideFileIPC.csproj" />
+    <Reference Include="HttpServerLibrary">
+      <HintPath>..\..\..\Http-Server-Library\Http Server Library\Http Server Library\bin\Release\netstandard2.0\HttpServerLibrary.dll</HintPath>
+    </Reference>
   </ItemGroup>
 
 </Project>
