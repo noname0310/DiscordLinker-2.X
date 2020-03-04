@@ -1,6 +1,4 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 using System.IO;
 using Newtonsoft.Json.Linq;
 
@@ -22,7 +20,7 @@ namespace DiscordLinker_2.X.OptionManage
         {
             if (!ConfigFileInfo.Exists)
             {
-                Config = GetDefaultConfig();
+                Config = DiscordLinkerConfig.GetDefaultConfig();
                 using(StreamWriter streamWriter = File.CreateText(CONFIG_FLIENAME))
                 {
                     streamWriter.Write(JObject.FromObject(Config).ToString());
@@ -45,15 +43,6 @@ namespace DiscordLinker_2.X.OptionManage
             }
 
             return true;
-        }
-
-        private DiscordLinkerConfig GetDefaultConfig()
-        {
-            return new DiscordLinkerConfig()
-            {
-                ServerPort = 20311,
-                BotToken = "Please Enter Your Bot Token"
-            };
         }
     }
 }

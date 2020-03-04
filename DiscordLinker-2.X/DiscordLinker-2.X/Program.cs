@@ -2,10 +2,10 @@
 using System.Threading;
 using System.Threading.Tasks;
 using Newtonsoft.Json.Linq;
-using Newtonsoft.Json;
 using DiscordLinker_2.X.IPCManage;
 using DiscordLinker_2.X.OptionManage;
 using DiscordLinker_2.X.DiscordManage;
+using Discord.WebSocket;
 
 namespace DiscordLinker_2.X
 {
@@ -18,6 +18,18 @@ namespace DiscordLinker_2.X
 
         static void Main(string[] args)
         {
+            CountdownEvent = new CountdownEvent(1);
+            ConfigManager = new ConfigManager();
+            if (ConfigManager.ConfigInit() == false)
+                return;
+
+            if (ConfigManager.Config.SetWindowSize)
+            {
+                Console.SetWindowSize(75, 13);
+                Console.BufferWidth = 75;
+                Console.BufferHeight = 13;
+            }
+
             Console.WriteLine(
                    @"  ______  _                            _  _      _         _               " + "\n" +
                    @"  |  _  \(_)                          | || |    (_)       | |              " + "\n" +
@@ -30,32 +42,49 @@ namespace DiscordLinker_2.X
                    "\n"
                    );
 
-            CountdownEvent = new CountdownEvent(1);
-
-            ConfigManager = new ConfigManager();
-            if (ConfigManager.ConfigInit() == false)
-                return;
-
             ServerManager = new ServerManager(ConfigManager.Config.ServerPort, CountdownEvent);
             ServerManager.Start();
-            Console.WriteLine("Http REST Server Started.");
+            Console.WriteLine("Http REST Server Started at {0}.", ConfigManager.Config.ServerPort);
             DiscordServer = new DiscordServer(ConfigManager.Config.BotToken);
             DiscordServer.StartAsync();
-            DiscordServer.OnDiscordEventHandled += DiscordServer_OnDiscordEventHandled;
             Console.WriteLine("Discord Bot Server Started.");
+
+            Thread.Sleep(2000);
+            DiscordServer.DiscordSocketClient.MessageReceived += DiscordSocketClient_MessageReceived;
+            ServerManager.OnPOSTRequest += ServerManager_OnPOSTRequest;
+            Console.WriteLine("DiscordLinker Started.");
             CountdownEvent.Wait();
         }
 
-        private static Task DiscordServer_OnDiscordEventHandled(DiscordEventInfo eventInfo)
+        private static void ServerManager_OnPOSTRequest(JArray jArray)
         {
-            JsonSerializerSettings jsonSerializerSettings = new JsonSerializerSettings
-            {
-                //ReferenceLoopHandling = ReferenceLoopHandling.Serialize,
-                MaxDepth = 1
-            };
+            MessageBuilder messageBuilder = new MessageBuilder();
 
-            var jsonSerializer = JsonSerializer.Create(jsonSerializerSettings);
-            Console.WriteLine(JObject.FromObject(eventInfo, jsonSerializer));
+            foreach (var item in jArray)
+            {
+                PluginRequestObject pluginRequestObject = item.ToObject<PluginRequestObject>();
+                messageBuilder.AddMessage(new ChatRoomInfo(pluginRequestObject.Guild, pluginRequestObject.Channel), pluginRequestObject.Msg);
+            }
+
+            foreach (var item in messageBuilder.Messages)
+            {
+                (DiscordServer.DiscordSocketClient
+                            .GetGuild(item.Key.Guild)
+                            .GetChannel(item.Key.Channel) as ISocketMessageChannel)
+                            .SendMessageAsync(item.Value.ToString());
+            }
+        }
+        private static Task DiscordSocketClient_MessageReceived(SocketMessage arg)
+        {
+            SocketUserMessage socketUserMessage = arg as SocketUserMessage;
+
+            if (socketUserMessage.Author.Id == DiscordServer.DiscordSocketClient.CurrentUser.Id)
+                return null;
+
+            LinkerRequestObject linkerRequestObject = new LinkerRequestObject(socketUserMessage);
+
+            JObject jobject = JObject.FromObject(linkerRequestObject);
+            ServerManager.JsonEnqueue(jobject);
             return null;
         }
     }

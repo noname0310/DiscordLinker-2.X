@@ -7,6 +7,9 @@ namespace DiscordLinker_2.X.IPCManage
 {
     class ServerManager
     {
+        public delegate string GETRequest(string parameter);
+        public event GETRequest OnGETRequest;
+
         public delegate void POSTRequest(JArray jArray);
         public event POSTRequest OnPOSTRequest;
 
@@ -52,6 +55,10 @@ namespace DiscordLinker_2.X.IPCManage
         {
             if (requestType == RequestType.GET)
             {
+                string eventresult = OnGETRequest?.Invoke(parameter);
+                if (eventresult != null)
+                    return eventresult;
+
                 if (parameter == "json")
                 {
                     string returnvalue;
