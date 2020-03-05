@@ -1,6 +1,8 @@
 ﻿using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using DiscordLinker_2.X.IPCManage;
 using DiscordLinker_2.X.OptionManage;
@@ -25,11 +27,10 @@ namespace DiscordLinker_2.X
 
             if (ConfigManager.Config.SetWindowSize)
             {
-                Console.SetWindowSize(75, 13);
-                Console.BufferWidth = 75;
+                Console.SetWindowSize(76, 13);
+                Console.BufferWidth = 76;
                 Console.BufferHeight = 13;
             }
-
             Console.WriteLine(
                    @"  ______  _                            _  _      _         _               " + "\n" +
                    @"  |  _  \(_)                          | || |    (_)       | |              " + "\n" +
@@ -68,10 +69,26 @@ namespace DiscordLinker_2.X
 
             foreach (var item in messageBuilder.Messages)
             {
-                (DiscordServer.DiscordSocketClient
+                if (2000 < item.Value.Length)
+                {
+                    string fullcontent = item.Value.ToString();
+                    int chunkSize = 2000;
+                    for (int i = 0; i < fullcontent.Length; i += chunkSize)
+                    {
+                        (DiscordServer.DiscordSocketClient
                             .GetGuild(item.Key.Guild)
                             .GetChannel(item.Key.Channel) as ISocketMessageChannel)
-                            .SendMessageAsync(item.Value.ToString());
+                            .SendMessageAsync(fullcontent.Substring(i, (fullcontent.Length < i + chunkSize) ? fullcontent.Length - i:chunkSize)).Wait();
+
+                    }
+                }
+                else
+                {
+                    (DiscordServer.DiscordSocketClient
+                                .GetGuild(item.Key.Guild)
+                                .GetChannel(item.Key.Channel) as ISocketMessageChannel)
+                                .SendMessageAsync(item.Value.ToString()).Wait();
+                }
             }
         }
         private static Task DiscordSocketClient_MessageReceived(SocketMessage arg)

@@ -25,9 +25,7 @@
   </ItemGroup>
 
   <ItemGroup>
-    <Reference Include="HttpServerLibrary">
-      <HintPath>..\..\..\Http-Server-Library\Http Server Library\Http Server Library\bin\Release\netstandard2.0\HttpServerLibrary.dll</HintPath>
-    </Reference>
+    <ProjectReference Include="..\..\..\Http-Server-Library\Http Server Library\Http Server Library\HttpServerLibrary.csproj" />
   </ItemGroup>
 
 </Project>
