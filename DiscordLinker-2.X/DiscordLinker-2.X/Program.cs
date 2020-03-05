@@ -75,19 +75,19 @@ namespace DiscordLinker_2.X
                     int chunkSize = 2000;
                     for (int i = 0; i < fullcontent.Length; i += chunkSize)
                     {
-                        (DiscordServer.DiscordSocketClient
-                            .GetGuild(item.Key.Guild)
-                            .GetChannel(item.Key.Channel) as ISocketMessageChannel)
-                            .SendMessageAsync(fullcontent.Substring(i, (fullcontent.Length < i + chunkSize) ? fullcontent.Length - i:chunkSize)).Wait();
+                        (DiscordServer?.DiscordSocketClient?
+                            .GetGuild(item.Key.Guild)?
+                            .GetChannel(item.Key.Channel) as ISocketMessageChannel)?
+                            .SendMessageAsync(fullcontent.Substring(i, (fullcontent.Length < i + chunkSize) ? fullcontent.Length - i:chunkSize))?.Wait();
 
                     }
                 }
                 else
                 {
-                    (DiscordServer.DiscordSocketClient
-                                .GetGuild(item.Key.Guild)
-                                .GetChannel(item.Key.Channel) as ISocketMessageChannel)
-                                .SendMessageAsync(item.Value.ToString()).Wait();
+                    (DiscordServer?.DiscordSocketClient?
+                                .GetGuild(item.Key.Guild)?
+                                .GetChannel(item.Key.Channel) as ISocketMessageChannel)?
+                                .SendMessageAsync(item.Value.ToString())?.Wait();
                 }
             }
         }
