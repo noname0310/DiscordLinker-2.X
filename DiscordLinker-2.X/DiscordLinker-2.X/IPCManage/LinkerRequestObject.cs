@@ -22,6 +22,10 @@ namespace DiscordLinker_2.X.IPCManage
             AuthorId = socketUserMessage.Author.Id;
             AuthorName = socketUserMessage.Author.Username;
             Msg = socketUserMessage.Content;
+            foreach (var item in socketUserMessage.Attachments)
+            {
+                Msg += item.ToString();
+            }
         }
     }
 }
