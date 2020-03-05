@@ -30,6 +30,7 @@ namespace DiscordLinker_2.X.OptionManage
                 }
 
                 Console.WriteLine("{0} File created successfully Please check the contents.", CONFIG_FLIENAME);
+                Console.ReadLine();
                 return false;
             }
 
@@ -39,6 +40,7 @@ namespace DiscordLinker_2.X.OptionManage
             if (Config.BotToken == "Please Enter Your Bot Token")
             {
                 Console.WriteLine("Entering a discord bot token is mandatory!");
+                Console.ReadLine();
                 return false;
             }
 
