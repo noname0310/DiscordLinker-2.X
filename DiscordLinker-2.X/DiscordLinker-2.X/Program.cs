@@ -39,7 +39,7 @@ namespace DiscordLinker_2.X
                    @"  | |/ / | |\__ \| (__| (_) || |  | (_| || |____| || | | ||   <|  __/| |   " + "\n" +
                    @"  |___/  |_||___/ \___|\___/ |_|   \__,_|\_____/|_||_| |_||_|\_\\___||_|   " + "\n" +
                    "\n" +
-                   "  V2.0.0                                                    made by noname" +
+                   "  V2.0.1                                                    made by noname" +
                    "\n"
                    );
 
@@ -69,25 +69,25 @@ namespace DiscordLinker_2.X
 
             foreach (var item in messageBuilder.Messages)
             {
-                if (2000 < item.Value.Length)
+                string fullcontent = item.Value.ToString();
+                int chunkSize = 2000;
+                for (int i = 0; i < fullcontent.Length; i += chunkSize)
                 {
-                    string fullcontent = item.Value.ToString();
-                    int chunkSize = 2000;
-                    for (int i = 0; i < fullcontent.Length; i += chunkSize)
+                    while (true)
                     {
-                        (DiscordServer?.DiscordSocketClient?
-                            .GetGuild(item.Key.Guild)?
-                            .GetChannel(item.Key.Channel) as ISocketMessageChannel)?
-                            .SendMessageAsync(fullcontent.Substring(i, (fullcontent.Length < i + chunkSize) ? fullcontent.Length - i:chunkSize))?.Wait();
-
-                    }
-                }
-                else
-                {
-                    (DiscordServer?.DiscordSocketClient?
+                        try
+                        {
+                            (DiscordServer?.DiscordSocketClient?
                                 .GetGuild(item.Key.Guild)?
                                 .GetChannel(item.Key.Channel) as ISocketMessageChannel)?
-                                .SendMessageAsync(item.Value.ToString())?.Wait();
+                                .SendMessageAsync(fullcontent.Substring(i, (fullcontent.Length < i + chunkSize) ? fullcontent.Length - i : chunkSize))?.Wait();
+                        }
+                        catch (System.AggregateException)
+                        {
+                            continue;
+                        }
+                        break;
+                    }
                 }
             }
         }
