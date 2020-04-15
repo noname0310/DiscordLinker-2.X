@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using System.Text;
 using System.Text.RegularExpressions;
+using System.Linq;
 using Newtonsoft.Json.Linq;
 using Oxide.Core;
 using Oxide.Core.Libraries.Covalence;
@@ -10,7 +11,7 @@ using UnityEngine;
 
 namespace Oxide.Plugins
 {
-    [Info("DiscordLinker", "noname", "2.0.0")]
+    [Info("DiscordLinker", "noname", "2.1.0")]
     [Description("Link Between Discord and Rust")]
     class DiscordLinker : CovalencePlugin
     {
@@ -21,6 +22,7 @@ namespace Oxide.Plugins
         private const string F_COMMAND = "command";
         private const string F_CHAT_READ = "chat_r";
         private const string F_CHAT_SEND = "chat_s";
+        private const string F_TEAMCHAT_READ = "teamchat_r";
         private const string F_CONSOLE_READ = "console_r";
         private const string F_CONSOLE_SEND = "console_s";
 
@@ -55,20 +57,29 @@ namespace Oxide.Plugins
             if (player == null)
                 return null;
 
-            if (chatchannel.ToString() != "Global")
-                return null;
-
-            if (BetterChatMute != null)
+            switch (chatchannel.ToString())
             {
-                bool? muted = BetterChatMute?.Call<bool>("API_IsMuted", player);
-                if (muted.HasValue && muted.Value)
-                {
-                    return null;
-                }
+                case "Global":
+                    if (BetterChatMute != null)
+                    {
+                        bool? muted = BetterChatMute?.Call<bool>("API_IsMuted", player);
+                        if (muted.HasValue && muted.Value)
+                            break;
+                    }
+
+                    if (HangulInput != null) message = (string)HangulInput?.Call("GetConvertedString", player.Id, message);
+                    IPCEnqueue(string.Format("**{0}**: {1}", (player.Object as BasePlayer).displayName, StripHTML(message)), F_CHAT_READ);
+                    break;
+
+                case "Team":
+                    if (HangulInput != null) message = (string)HangulInput?.Call("GetConvertedString", player.Id, message);
+                    IPCEnqueue(string.Format("**{0}**: {1}", (player.Object as BasePlayer).displayName, StripHTML(message)), F_TEAMCHAT_READ);
+                    break;
+
+                default:
+                    break;
             }
 
-            if (HangulInput != null) message = (string)HangulInput?.Call("GetConvertedString", player.Id, message);
-            IPCEnqueue(string.Format("**{0}**: {1}", (player.Object as BasePlayer).displayName, StripHTML(message)), F_CHAT_READ);
             return null;
         }
 
@@ -124,7 +135,10 @@ namespace Oxide.Plugins
         }
         private void HandleLog(string message, string stackTrace, LogType type)
         {
-            IPCEnqueue(message, F_CONSOLE_READ);
+            if (!string.IsNullOrEmpty(message) && !config.ConsoleFilter.Any(message.Contains))
+            {
+                IPCEnqueue(message, F_CONSOLE_READ);
+            }
         }
 
         #endregion
@@ -139,6 +153,58 @@ namespace Oxide.Plugins
 
             if (config == null)
                 config = GetDefaultConfig();
+
+            VersionUpdate(config);
+        }
+
+        private void VersionUpdate(PluginConfig config)
+        {
+            VersionNumber version = config.ConfigVersion;
+
+            if (version < new VersionNumber(2, 1, 0))
+            {
+                config.ConsoleFilter = GetDefaultConsoleFilter();
+            }
+
+            if (version < this.Version)
+            {
+                version = this.Version;
+                Config.WriteObject(config, true);
+                Puts("Config version has been updated");
+            }
+        }
+
+        private static List<string> GetDefaultConsoleFilter()
+        {
+            return new List<string>
+            {
+                "AngryAnt Behave version",
+                "alphamapResolution is clamped to the range of",
+                "api.facepunch.com/api/public/manifest/",
+                "Checking for new Steam Item Definitions..",
+                "Floating point textures aren't supported on this device",
+                "HDR Render Texture not supported, disabling HDR on reflection probe",
+                "Image Effects are not supported on this platform",
+                "Loading Prefab Bundle",
+                "Missing shader in",
+                "Missing projectileID",
+                "Motion vectors not supported on a platform that does not support",
+                "SwitchParent Missed",
+                "saddletest",
+                "The image effect Main Camera",
+                "The image effect effect -",
+                "The referenced script",
+                "Unsupported encoding: 'utf8'",
+                "Warning, null renderer for ScaleRenderer!",
+                "[AmplifyColor]",
+                "[AmplifyOcclusion]",
+                "[CoverageQueries] Disabled due to unsupported",
+                "[CustomProbe]",
+                "[Manifest] URI IS",
+                "[SpawnHandler] populationCounts",
+                ", disk(",
+                "Kinematic body only supports Speculative Continuous collision detection"
+            };
         }
 
         private class PluginConfig
@@ -146,6 +212,8 @@ namespace Oxide.Plugins
             public char CommandPrefix;
             public ulong GuildID;
             public List<ChatChannel> ChatChannels;
+            public List<string> ConsoleFilter = GetDefaultConsoleFilter();
+            public VersionNumber ConfigVersion;
         }
 
         public class ChatChannel
@@ -189,6 +257,13 @@ namespace Oxide.Plugins
                         {
                             F_CONSOLE_READ,
                             F_CONSOLE_SEND
+                        }
+                        ),
+                    new ChatChannel(
+                        0,
+                        new List<string>()
+                        {
+                            F_TEAMCHAT_READ
                         }
                         )
                 }
