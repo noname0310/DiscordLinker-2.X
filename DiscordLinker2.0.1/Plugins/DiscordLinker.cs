@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Oxide.Plugins
 {
-    [Info("DiscordLinker", "noname", "2.1.0")]
+    [Info("DiscordLinker", "noname", "2.1.1")]
     [Description("Link Between Discord and Rust")]
     class DiscordLinker : CovalencePlugin
     {
@@ -68,12 +68,12 @@ namespace Oxide.Plugins
                     }
 
                     if (HangulInput != null) message = (string)HangulInput?.Call("GetConvertedString", player.Id, message);
-                    IPCEnqueue(string.Format("**{0}**: {1}", (player.Object as BasePlayer).displayName, StripHTML(message)), F_CHAT_READ);
+                    IPCEnqueue(string.Format("**{0}**: {1}", bplayer.displayName, StripHTML(message)), F_CHAT_READ);
                     break;
 
                 case "Team":
                     if (HangulInput != null) message = (string)HangulInput?.Call("GetConvertedString", player.Id, message);
-                    IPCEnqueue(string.Format("**{0}**: {1}", (player.Object as BasePlayer).displayName, StripHTML(message)), F_TEAMCHAT_READ);
+                    IPCEnqueue(string.Format("**[{0}] {1}**: {2}", bplayer.currentTeam, bplayer.displayName, StripHTML(message)), F_TEAMCHAT_READ);
                     break;
 
                 default:
