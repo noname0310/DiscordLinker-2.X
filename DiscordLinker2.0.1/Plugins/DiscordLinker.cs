@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Oxide.Plugins
 {
-    [Info("DiscordLinker", "noname", "2.1.1")]
+    [Info("DiscordLinker", "noname", "2.1.2")]
     [Description("Link Between Discord and Rust")]
     class DiscordLinker : CovalencePlugin
     {
@@ -159,16 +159,14 @@ namespace Oxide.Plugins
 
         private void VersionUpdate(PluginConfig config)
         {
-            VersionNumber version = config.ConfigVersion;
-
-            if (version < new VersionNumber(2, 1, 0))
+            if (config.ConfigVersion < new VersionNumber(2, 1, 0))
             {
                 config.ConsoleFilter = GetDefaultConsoleFilter();
             }
 
-            if (version < this.Version)
+            if (config.ConfigVersion < this.Version)
             {
-                version = this.Version;
+                config.ConfigVersion = this.Version;
                 Config.WriteObject(config, true);
                 Puts("Config version has been updated");
             }
