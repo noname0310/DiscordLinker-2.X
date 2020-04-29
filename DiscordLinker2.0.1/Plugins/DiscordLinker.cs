@@ -11,12 +11,12 @@ using UnityEngine;
 
 namespace Oxide.Plugins
 {
-    [Info("DiscordLinker", "noname", "2.1.2")]
+    [Info("DiscordLinker", "noname", "2.2.0")]
     [Description("Link Between Discord and Rust")]
     class DiscordLinker : CovalencePlugin
     {
         [PluginReference]
-        Plugin SocketIPCManager, BetterChatMute, HangulInput;
+        Plugin SocketIPCManager, BetterChatMute, HangulInput, ConvertKor;
 
         private const string F_LINKERINIT = "linkerinit_r";
         private const string F_COMMAND = "command";
@@ -67,12 +67,14 @@ namespace Oxide.Plugins
                             break;
                     }
 
-                    if (HangulInput != null) message = (string)HangulInput?.Call("GetConvertedString", player.Id, message);
+                    if (ConvertKor != null && (bool)ConvertKor.Call("isConvertKor", bplayer)) message = (string)ConvertKor.Call("GetConvertKor", message);
+                    else if (HangulInput != null) message = (string)HangulInput.Call("GetConvertedString", player.Id, message);
                     IPCEnqueue(string.Format("**{0}**: {1}", bplayer.displayName, StripHTML(message)), F_CHAT_READ);
                     break;
 
                 case "Team":
-                    if (HangulInput != null) message = (string)HangulInput?.Call("GetConvertedString", player.Id, message);
+                    if (ConvertKor != null && (bool)ConvertKor.Call("isConvertKor", bplayer)) message = (string)ConvertKor?.Call("GetConvertKor", message);
+                    else if (HangulInput != null) message = (string)HangulInput?.Call("GetConvertedString", player.Id, message);
                     IPCEnqueue(string.Format("**[{0}] {1}**: {2}", bplayer.currentTeam, bplayer.displayName, StripHTML(message)), F_TEAMCHAT_READ);
                     break;
 
