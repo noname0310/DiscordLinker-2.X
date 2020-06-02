@@ -3,7 +3,7 @@ using Oxide.Core.Plugins;
 
 namespace Oxide.Plugins
 {
-    [Info("DiscordConnection", "noname", "1.0.3")]
+    [Info("DiscordConnection", "noname", "1.0.4")]
     [Description("Send ConnectionMsg To Discord")]
     class DiscordConnection : RustPlugin
     {
@@ -25,7 +25,7 @@ namespace Oxide.Plugins
             SaveConfig();
         }
 
-        private void OnPlayerInit(BasePlayer player)
+        private void OnPlayerConnected(BasePlayer player)
         {
             if (Convert.ToBoolean(Config["SendPlayerList"]) == true)
             {
