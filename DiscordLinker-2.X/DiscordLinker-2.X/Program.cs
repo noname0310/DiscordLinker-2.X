@@ -28,8 +28,7 @@ namespace DiscordLinker_2.X
             if (ConfigManager.Config.SetWindowSize)
             {
                 Console.SetWindowSize(76, 13);
-                Console.BufferWidth = 76;
-                Console.BufferHeight = 13;
+                Console.SetBufferSize(76, 13);
             }
             Console.WriteLine(
                    @"  ______  _                            _  _      _         _               " + "\n" +
