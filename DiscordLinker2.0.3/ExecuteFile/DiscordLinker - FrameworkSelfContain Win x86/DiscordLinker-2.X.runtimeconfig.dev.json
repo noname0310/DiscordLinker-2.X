@@ -1,0 +1,9 @@
+{
+  "runtimeOptions": {
+    "additionalProbingPaths": [
+      "C:\\noname\\Projects\\DiscordLinker-2.X\\DiscordLinker-2.X\\DiscordLinker-2.X\\bin\\Release\\netcoreapp3.1\\win-x86\\source",
+      "C:\\Users\\Administrator\\.dotnet\\store\\|arch|\\|tfm|",
+      "C:\\Users\\Administrator\\.nuget\\packages"
+    ]
+  }
+}
