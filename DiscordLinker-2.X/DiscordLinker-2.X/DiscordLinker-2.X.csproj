@@ -4,15 +4,24 @@
     <OutputType>Exe</OutputType>
     <TargetFramework>netcoreapp3.1</TargetFramework>
     <RootNamespace>DiscordLinker_2.X</RootNamespace>
-    <Version>2.0.0</Version>
+    <Version>2.0.3</Version>
     <Copyright />
     <RepositoryUrl>https://github.com/noname0310/DiscordLinker-2.X</RepositoryUrl>
     <SignAssembly>false</SignAssembly>
     <AssemblyOriginatorKeyFile />
+    <Authors>noname</Authors>
+    <PackageId>DiscordLinker 2</PackageId>
+    <Product>DiscordLinker 2</Product>
+    <RunPostBuildEvent></RunPostBuildEvent>
   </PropertyGroup>
 
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|AnyCPU'">
-    <Optimize>false</Optimize>
+    <Optimize>true</Optimize>
+  </PropertyGroup>
+
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|AnyCPU'">
+    <PlatformTarget>AnyCPU</PlatformTarget>
+    <DocumentationFile></DocumentationFile>
   </PropertyGroup>
 
   <ItemGroup>
@@ -27,5 +36,8 @@
   <ItemGroup>
     <ProjectReference Include="..\..\..\Http-Server-Library\Http Server Library\Http Server Library\HttpServerLibrary.csproj" />
   </ItemGroup>
-
+  
+  <ItemGroup>
+    <AdditionalProbingPath Include="$(TargetDir)source" />
+  </ItemGroup>
 </Project>
