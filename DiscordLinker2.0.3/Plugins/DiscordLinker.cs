@@ -280,7 +280,7 @@ namespace Oxide.Plugins
             {
                 if (item.Filters.Contains(filter))
                 {
-                    SocketIPCManager.Call("API_IPCEnqueue", JObject.FromObject(new PluginRequestObject(config.GuildID, item.ChannelID, str)));
+                    SocketIPCManager?.Call("API_IPCEnqueue", JObject.FromObject(new PluginRequestObject(config.GuildID, item.ChannelID, str)));
                 }
             }
         }
