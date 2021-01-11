@@ -11,7 +11,7 @@ using UnityEngine;
 
 namespace Oxide.Plugins
 {
-    [Info("DiscordLinker", "noname", "2.2.0")]
+    [Info("DiscordLinker", "noname", "2.2.1")]
     [Description("Link Between Discord and Rust")]
     class DiscordLinker : CovalencePlugin
     {
